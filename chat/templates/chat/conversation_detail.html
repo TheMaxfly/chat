@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Conversation</title>
+    <style>
+        #chat-box {
+            width: 300px;
+            height: 400px;
+            border: 1px solid black;
+            overflow-y: scroll;
+        }
+        #message-input {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Conversation avec {{ conversation.advisor.username }}</h1>
+    <div id="chat-box">
+        {% for message in messages %}
+            <p><strong>{{ message.sender.username }}:</strong> {{ message.content }} <em>{{ message.timestamp }}</em></p>
+        {% endfor %}
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Envoyer</button>
+    </form>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const roomName = "{{ conversation.name }}";  // Use the unique conversation name
+        const chatSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+    );
+        chatBox.scrollTop = chatBox.scrollHeight;
+    </script>
+</body>
+</html>

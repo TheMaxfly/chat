@@ -1,0 +1,19 @@
+<!-- chat/templates/chat/enter_room.html -->
+<<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index Page</title>
+</head>
+<body>
+    <h1>Welcome to the Chat Application</h1>
+    <button onclick="openChatWindow()">Open Chat</button>
+
+    <script>
+        function openChatWindow() {
+            window.open("{% url 'chat_window' %}", "ChatWindow", "width=400,height=500");
+        }
+    </script>
+</body>
+</html>
+
