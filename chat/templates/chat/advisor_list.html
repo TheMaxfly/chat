@@ -1,0 +1,21 @@
+<!-- chat/templates/chat/advisor_list.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Choisir un Conseiller</title>
+</head>
+<body>
+    <h1>Choisissez un conseiller pour discuter</h1>
+    <ul>
+        {% for advisor in advisors %}
+            <li>
+                {{ advisor.username }}
+                <a href="{% url 'chat:start_conversation' advisor.id %}">Commencer une conversation</a>
+            </li>
+        {% empty %}
+            <li>Aucun conseiller disponible pour le moment.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
