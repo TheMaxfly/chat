@@ -1,0 +1,20 @@
+<!-- templates/chat/advisor_conversations.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Conversations en cours</title>
+</head>
+<body>
+    <h1>Conversations en cours</h1>
+    <ul>
+        {% for conversation in conversations %}
+            <li>
+                <a href="{% url 'chat:conversation_detail' conversation_id=conversation.id %}">
+                    Conversation avec {{ conversation.client.username }} ({{ conversation.expires_at }})
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

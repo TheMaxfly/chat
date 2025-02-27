@@ -4,6 +4,8 @@ from asgiref.sync import sync_to_async
 from .models import TemporaryConversation, Message
 import logging
 
+
+
 logger = logging.getLogger(__name__)
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -17,7 +19,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
         await self.accept()
-        #logger.info(f'Connected to {self.room_group_name}')
         logger.info(f"WebSocket connected: {self.channel_name}")
 
     async def disconnect(self, close_code):
@@ -28,12 +29,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         logger.info(f"WebSocket disconnected: {self.channel_name}")
 
     async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json['message']
+        data = json.loads(text_data)
+        message = data['message']
+        username = data['username']
 
         # Save message to the database
         user = self.scope['user']
-        conversation = await sync_to_async(TemporaryConversation.objects.get)(id=self.room_name)
+        conversation = await sync_to_async(TemporaryConversation.objects.get)(name=self.room_name)
         await sync_to_async(Message.objects.create)(
             conversation=conversation,
             sender=user,
@@ -47,18 +49,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'type': 'chat_message',
                 'message': message,
                 'username': user.username,
+                'timestamp': data.get('timestamp') or json.dumps(self.scope['timestamp']),
             }
         )
         logger.info(f"Message sent: {message}")
 
-
     async def chat_message(self, event):
         message = event['message']
         username = event['username']
+        timestamp = event['timestamp']
+
+        logger.info(f"Forwarding message from {username}: {message}")
 
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
             'message': message,
             'username': username,
+            'timestamp': timestamp,
         }))
         logger.info(f"Message received: {message} from {username}")
+
